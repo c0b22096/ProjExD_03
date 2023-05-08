@@ -115,7 +115,16 @@ def main():
     bg_img = pg.image.load("ex03-20230507/fig/pg_bg.jpg")
 
     bird = Bird(3, (900, 400))
-    bomb = Bomb((255, 0, 0), 10)
+
+    NUM_OF_BOMBS = 3
+    bombs = []
+    for _ in range(NUM_OF_BOMBS):
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        size = random.randint(10, 50)
+        bomb = Bomb((r, g, b), size)
+        bombs.append(bomb)
 
     tmr = 0
     while True:
@@ -124,17 +133,20 @@ def main():
                 return
         tmr += 1
         screen.blit(bg_img, [0, 0])
-        
-        if bird._rct.colliderect(bomb._rct):
+
+        for i in bombs:
+            if bird._rct.colliderect(i._rct):
             # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
-            bird.change_img(8, screen)
-            pg.display.update()
-            time.sleep(1)
-            return
+                bird.change_img(8, screen)
+                pg.display.update()
+                time.sleep(1)
+                return
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
-        bomb.update(screen)
+        for i in bombs:
+            i.update(screen)
+            
         pg.display.update()
         clock.tick(1000)
 
