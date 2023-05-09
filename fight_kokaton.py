@@ -23,6 +23,17 @@ def check_bound(area: pg.Rect, obj: pg.Rect) -> tuple[bool, bool]:
         tate = False
     return yoko, tate
 
+class Beam:
+    def __init__(self, xy):
+        self._img = pg.image.load("ex03-20230507/fig/beam.png")
+        self._rct = self._img.get_rect()
+        self._rct.center = xy[0]+150, xy[1]+50
+        self._vx, self._vy = +1, 0
+
+    def update(self, screen: pg.Surface):
+        self._rct.move_ip(self._vx, self._vy)
+        screen.blit(self._img, self._rct)
+
 
 class Bird:
     """
@@ -113,6 +124,7 @@ def main():
     screen = pg.display.set_mode((WIDTH, HEIGHT))
     clock = pg.time.Clock()
     bg_img = pg.image.load("ex03-20230507/fig/pg_bg.jpg")
+    flag = False
 
     bird = Bird(3, (900, 400))
 
@@ -143,6 +155,13 @@ def main():
                 return
 
         key_lst = pg.key.get_pressed()
+        if key_lst[pg.K_SPACE]:
+            beam = Beam(bird._rct)
+            flag = True
+
+        if flag:
+            beam.update(screen)
+
         bird.update(key_lst, screen)
         for i in bombs:
             i.update(screen)
