@@ -28,7 +28,7 @@ class Beam:
         self._img = pg.image.load("ex03-20230507/fig/beam.png")
         self._rct = self._img.get_rect()
         self._rct.center = xy[0]+150, xy[1]+50
-        self._vx, self._vy = +1, 0
+        self._vx, self._vy = +3, 0
 
     def update(self, screen: pg.Surface):
         self._rct.move_ip(self._vx, self._vy)
@@ -52,14 +52,8 @@ class Bird:
         引数1 num：こうかとん画像ファイル名の番号
         引数2 xy：こうかとん画像の位置座標タプル
         """
-        self._img = pg.transform.flip(  # 左右反転
-            pg.transform.rotozoom(  # 2倍に拡大
-                pg.image.load(f"ex03-20230507/fig/{num}.png"), 
-                0, 
-                2.0), 
-            True, 
-            False
-        )
+        img = pg.transform.rotozoom(pg.image.load(f"ex03-20230507/fig/{num}.png"), 0, 2.0)
+        self._img = pg.transform.flip(img, True, False)
         self._rct = self._img.get_rect()
         self._rct.center = xy
 
@@ -78,13 +72,18 @@ class Bird:
         引数1 key_lst：押下キーの真理値リスト
         引数2 screen：画面Surface
         """
+        #sum_mv = [0, 0]
         for k, mv in __class__._delta.items():
             if key_lst[k]:
                 self._rct.move_ip(mv)
+                #sum_mv[0] += mv[0]
+                #sum_mv[1] += mv[1]
         if check_bound(screen.get_rect(), self._rct) != (True, True):
             for k, mv in __class__._delta.items():
                 if key_lst[k]:
                     self._rct.move_ip(-mv[0], -mv[1])
+        #if not (sum_mv[0])
+            #self._img = self._imgs[tuple(sum_mv)]
         screen.blit(self._img, self._rct)
 
 
@@ -118,6 +117,20 @@ class Bomb:
         self._rct.move_ip(self._vx, self._vy)
         screen.blit(self._img, self._rct)
 
+class Explosion:
+    def __init__(self, xy, _life):
+        self._image = pg.image.load("ex03-20230507/fig/explosion.gif")
+        self._image_2 = pg.transform.flip(self._image, True, True)
+        self._images = [self._image, self._image_2]
+        self._life = _life
+        self._rct = self._image.get_rect()
+        self._rct.center = xy
+
+    def update(self, screen: pg.Surface):
+        screen.blit(self._image, self._rct)
+        time.sleep(self._life)
+        #screen.blit(self._image_2, self._rct)
+
 
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
@@ -130,11 +143,13 @@ def main():
 
     NUM_OF_BOMBS = 3
     bombs = []
+    beams = []
+    #explosions = []
     for _ in range(NUM_OF_BOMBS):
         r = random.randint(0, 255)
         g = random.randint(0, 255)
         b = random.randint(0, 255)
-        size = random.randint(10, 50)
+        size = random.randint(10, 30)
         bomb = Bomb((r, g, b), size)
         bombs.append(bomb)
 
@@ -153,14 +168,27 @@ def main():
                 pg.display.update()
                 time.sleep(1)
                 return
+            
+            for j in beams:
+                if flag:
+                    if j._rct.colliderect(i._rct):
+                        bird.change_img(6, screen)
+                        #explosion = Explosion(i._rct, 10)
+                        #explosion.update(screen)
+                        pg.display.update()
+                        bombs.remove(i)
+                        beams.remove(j)
+                    
 
         key_lst = pg.key.get_pressed()
         if key_lst[pg.K_SPACE]:
             beam = Beam(bird._rct)
+            beams.append(beam)
             flag = True
 
         if flag:
-            beam.update(screen)
+            for i in beams:
+                i.update(screen)
 
         bird.update(key_lst, screen)
         for i in bombs:
