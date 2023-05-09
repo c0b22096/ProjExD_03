@@ -28,7 +28,7 @@ class Beam:
         self._img = pg.image.load("ex03-20230507/fig/beam.png")
         self._rct = self._img.get_rect()
         self._rct.center = xy[0]+150, xy[1]+50
-        self._vx, self._vy = +1, 0
+        self._vx, self._vy = +3, 0
 
     def update(self, screen: pg.Surface):
         self._rct.move_ip(self._vx, self._vy)
