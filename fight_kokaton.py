@@ -125,6 +125,9 @@ def main():
     clock = pg.time.Clock()
     bg_img = pg.image.load("ex03-20230507/fig/pg_bg.jpg")
     flag = False
+    n = 0
+    fonto = pg.font.Font(None, 80)
+    txt = fonto.render(str(n), True, (0, 0, 0))
 
     bird = Bird(3, (900, 400))
 
@@ -153,6 +156,12 @@ def main():
                 pg.display.update()
                 time.sleep(1)
                 return
+            
+            if flag:
+                if beam._rct.colliderect(i._rct):
+                    bombs.remove(i)
+                    n += 1
+                    txt = fonto.render(str(n), True, (0, 0, 0))
 
         key_lst = pg.key.get_pressed()
         if key_lst[pg.K_SPACE]:
@@ -165,6 +174,8 @@ def main():
         bird.update(key_lst, screen)
         for i in bombs:
             i.update(screen)
+
+        screen.blit(txt, [100, 100])
             
         pg.display.update()
         clock.tick(1000)
