@@ -129,17 +129,15 @@ class Bomb:
         screen.blit(self._img, self._rct)
 
 class Explosion:
-    def __init__(self, xy, _life):
+    def __init__(self, xy):
         self._image = pg.image.load("ex03-20230507/fig/explosion.gif")
         self._image_2 = pg.transform.flip(self._image, True, True)
         self._images = [self._image, self._image_2]
-        self._life = _life
         self._rct = self._image.get_rect()
         self._rct.center = xy
 
     def update(self, screen: pg.Surface):
         screen.blit(self._image, self._rct)
-        time.sleep(self._life)
         #screen.blit(self._image_2, self._rct)
 
 
@@ -186,6 +184,7 @@ def main():
                 if flag:
                     if j._rct.colliderect(i._rct):
                         bird.change_img(6, screen)
+                        #explosion = Explosion(i._rct)
                         pg.display.update()
                         bombs.remove(i)
                         beams.remove(j)
@@ -193,7 +192,7 @@ def main():
                         txt = fonto.render(str(n), True, (0, 0, 0))
 
         key_lst = pg.key.get_pressed()
-        if key_lst[pg.K_SPACE]:
+        if key_lst[pg.K_SPACE] and tmr%30==0:
             beam = Beam(bird._rct)
             beams.append(beam)
             flag = True
